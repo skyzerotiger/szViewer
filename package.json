@@ -1,0 +1,26 @@
+{
+  "name": "szviewer",
+  "version": "0.0.1",
+  "description": "image viewer",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skyzerotiger/szViewer.git"
+  },
+  "keywords": [
+    "image",
+    "viewer"
+  ],
+  "author": "skyzerotiger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/skyzerotiger/szViewer/issues"
+  },
+  "homepage": "https://github.com/skyzerotiger/szViewer#readme",
+  "devDependencies": {
+    "electron": "^18.2.0"
+  }
+}
