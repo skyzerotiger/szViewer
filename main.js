@@ -1,3 +1,11 @@
+const isDev = require('electron-is-dev');
+
+if (isDev) {
+  console.log('Running in development');
+} else {
+  console.log('Running in production');
+}
+
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
@@ -8,7 +16,20 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false,
+    }
+  })
+
+  if(!isDev)
+    win.setMenu(null)
+
+    mainWindow.once('ready-to-show', () => {
+    if(process.argv.length>=2)
+    {    
+      console.log("load-movie");
+      mainWindow.webContents.send("load-movie", process.argv[1]);
     }
   })
 

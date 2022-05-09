@@ -22,5 +22,8 @@
   "homepage": "https://github.com/skyzerotiger/szViewer#readme",
   "devDependencies": {
     "electron": "^18.2.0"
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0"
   }
 }
