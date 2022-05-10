@@ -1,5 +1,5 @@
 # szViewer
-Image Viewer
+szViewer is an image viewer developed with Electron. 
 
-
-(https://skyzerotiger.com)
+# Author
+skyzerotiger (https://skyzerotiger.com)
