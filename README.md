@@ -1,4 +1,4 @@
-<a href="https://discord.gg/nF2mDGeqFD"><img alt="Discord" src="https://img.shields.io/discord/973575619680034867?logo=discord&logoColor=white"/></a> 
+<a href="https://discord.gg/MPwx5zxjsM"><img alt="Discord" src="https://img.shields.io/discord/973575619680034867?logo=discord&logoColor=white"/></a> 
 
 # szViewer
 szViewer는 일렉트론으로 개발된 데스크탑용 이미지뷰어 입니다.   
