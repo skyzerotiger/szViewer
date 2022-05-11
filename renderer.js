@@ -17,7 +17,7 @@ function LoadImage(filename)
         document.title = "szViewer - " + filename.replace(/^.*[\\\/]/, '');
         element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + filename + "'></img>"         
         // disable drag
-        element.ondragstart = function() { return false; };
+        element.ondragstart = function() { return false; }; 
     }
 }
 
@@ -40,83 +40,6 @@ document.addEventListener('dragover', (e) => {
     e.stopPropagation();
 });
 
-
-document.onkeypress = function (e) 
-{
-    console.log("onkeypress - " + e.key);
-
-    switch (e.key) 
-    {
-        case "ArrowRight":
-            break;
-        case "ArrowLeft":
-            break;
-        case "ArrowUp":
-            var videoElement = document.getElementById("video");
-            if (videoElement)
-             {
-                try 
-                {
-                    videoElement.volume += 0.05;
-                }
-                catch
-                {
-                    videoElement.volume = 1;
-                }
-
-                console.log("Volume = " + videoElement.volume);
-            }
-            break;
-        case "ArrowDown":
-            var videoElement = document.getElementById("video");
-            if (videoElement) {
-                try
-                {
-                    videoElement.volume -= 0.05;
-                }
-                catch
-                {
-                    videoElement.volume = 0;
-                }
-
-                console.log("Volume = " + videoElement.volume);
-            }
-            break;
-    }
-}
-
-function VideoSeek(delta)
-{
-    var videoElement = document.getElementById("video");
-    if (videoElement)
-    {
-        videoElement.currentTime = videoElement.currentTime+delta;
-    }
-
-    console.log("currentTime = " + videoElement.currentTime);
-}
-
-function VideoVolume(delta)
-{
-    var videoElement = document.getElementById("video");
-    if (videoElement)
-     {
-        try 
-        {
-            videoElement.volume += delta;
-        }
-        catch
-        {
-            if(delta>0)
-                videoElement.volume = 1;
-            else
-                videoElement.volume = 0;
-        }
-
-        console.log("volume = " + videoElement.volume);
-    }
-}
-
 document.onkeydown = function(e)
 {
     console.log("onkeydown - " + e.key);
@@ -124,18 +47,14 @@ document.onkeydown = function(e)
     switch(e.key)
     {
         case "ArrowRight":
-            VideoSeek(5);
             break;
 
         case "ArrowLeft":
-            VideoSeek(-5);
             break;
 
         case "ArrowUp":
-            VideoVolume(0.05);
             break;
         case "ArrowDown":
-            VideoVolume(-0.05);
             break;
     }
 }
@@ -155,14 +74,7 @@ document.onkeyup = function(e)
             break;
 
         case " ":
-            var videoElement = document.getElementById("video");
-            if(videoElement)
-            {
-                if(videoElement.paused)
-                    videoElement.play();
-                else
-                    videoElement.pause();
-            }
+            
             break;
     }
 }
