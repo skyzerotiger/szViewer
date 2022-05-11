@@ -4,7 +4,7 @@ language = require("./lang.ko.json")
 
 ipcRenderer.on("load-image", function (event,store) 
     {
-        console.log("load-image " + store);
+        console.log("ipc load-image " + store);
         LoadImage(store);
     }
 );
@@ -15,38 +15,7 @@ function LoadImage(filename)
     if (element) 
     {
         document.title = "szViewer - " + filename.replace(/^.*[\\\/]/, '');
-        element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + filename + "'></img>"
-                    
-        // Error handling
-        document.getElementsByTagName('image')[0].addEventListener('error', 
-            function(event)
-            {
-                window.alert(language.Error_Not_Support_Video);
-            }, 
-            true
-        );
-
-        // vidoe loaded event 
-        // - resize window to fit video size
-        document.getElementsByTagName('image')[0].addEventListener('loadeddata', 
-            function(event)
-            {
-                var imageElement = document.getElementById("image");
-                if(imageElement)
-                {
-                    var width = imageElement.videoWidth;
-                    var height = imageElement.videoHeight;
-
-                    if(width > window.screen.width)
-                        width = window.screen.width;
-                    if(height > window.screen.height)
-                        height = window.screen.height;
-
-                    window.resizeTo(width, height)
-                }
-            }, 
-            true
-        );
+        element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + filename + "'></img>"         
     }
 }
 

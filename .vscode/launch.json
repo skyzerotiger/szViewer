@@ -6,9 +6,9 @@
         "type": "node",
         "request": "launch",
         "cwd": "${workspaceFolder}",
-        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-nix",
         "windows": {
-          "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+          "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-forge-vscode-win.cmd"
         },
         "args" : ["."],
         "outputCapture": "std"

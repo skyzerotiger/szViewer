@@ -1,4 +1,5 @@
 const isDev = require('electron-is-dev');
+var fs = require('fs');
 
 if (isDev) {
   console.log('Running in development');
@@ -22,14 +23,22 @@ function createWindow () {
     }
   })
 
-  if(!isDev)
+  if(!isDev)  
     win.setMenu(null)
 
     mainWindow.once('ready-to-show', () => {
     if(process.argv.length>=2)
     {    
-      console.log("load-movie");
-      mainWindow.webContents.send("load-movie", process.argv[1]);
+      //console.log("load-image main.js" + process.argv.length + ", " + process.argv[0] + ", " +process.argv[1]);
+      
+      if(fs.existsSync(process.argv[1]))
+      {
+        // directory check
+        var stats = fs.lstatSync(process.argv[1]);
+        if (!stats.isDirectory()) {
+          mainWindow.webContents.send("load-image", process.argv[1]);
+        }        
+      }
     }
   })
 
