@@ -1,6 +1,6 @@
 {
   "name": "szViewer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "image viewer",
   "main": "main.js",
   "scripts": {

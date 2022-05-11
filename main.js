@@ -29,7 +29,7 @@ var handleStartupEvent = function() {
       return true;
 
     case '--squirrel-firstrun':
-    case '--squirrel-update':
+    case '--squirrel-updated':
     case '--squirrel-obsolete':
       app.quit();
       return true;
