@@ -16,6 +16,8 @@ function LoadImage(filename)
     {
         document.title = "szViewer - " + filename.replace(/^.*[\\\/]/, '');
         element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + filename + "'></img>"         
+        // disable drag
+        element.ondragstart = function() { return false; };
     }
 }
 

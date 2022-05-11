@@ -1,36 +1,82 @@
 const isDev = require('electron-is-dev');
-var fs = require('fs');
 
 if (isDev) {
   console.log('Running in development');
 } else {
   console.log('Running in production');
+  require('update-electron-app')( { notifyUser :false });
 }
 
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
-const path = require('path')
+const {app, BrowserWindow } = require('electron')
+var fs = require('fs');
 
-function createWindow () {
+var handleStartupEvent = function() {
+  if (process.platform !== 'win32') {
+    return false;
+  }
+  
+  var squirrelCommand = process.argv[1];
+  switch (squirrelCommand) {
+    case '--squirrel-install':    
+      RegistrySetup(true);
+      //app.quit();
+      return true;
+
+    case '--squirrel-uninstall':
+      RegistrySetup(false);
+      //app.quit();
+      return true;
+
+    case '--squirrel-firstrun':
+    case '--squirrel-update':
+    case '--squirrel-obsolete':
+      app.quit();
+      return true;
+  }
+};
+
+handleStartupEvent();
+
+function RegistrySetup(isInstall)
+{
+  const {ProgId, ShellOption, Regedit} = require('electron-regedit')
+  
+  new ProgId({
+      appName : "szViewer",
+      description: 'szViewer.ImageFiles',
+      
+      icon: '',
+      extensions: ['png','jpg','jpeg', 'jfif', 'pjpeg', 'pjp', 'svg', 'webp','gif', 'apng', 'avif'],
+      shell: [
+          new ShellOption({verb: ShellOption.OPEN}),
+      ]
+  })
+    
+  if(isInstall)
+    Regedit.installAll().then(() => { app.quit(); });
+  else
+    Regedit.uninstallAll().then(() => { app.quit(); });
+}
+
+function createWindow () {  
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     }
   })
 
   if(!isDev)  
-    win.setMenu(null)
+    mainWindow.setMenu(null)
 
-    mainWindow.once('ready-to-show', () => {
+  mainWindow.once('ready-to-show', () => {
     if(process.argv.length>=2)
     {    
       //console.log("load-image main.js" + process.argv.length + ", " + process.argv[0] + ", " +process.argv[1]);
-      
       if(fs.existsSync(process.argv[1]))
       {
         // directory check
