@@ -80,13 +80,15 @@ function CreateContextMenu()
     menu: (actions, props, browserWindow, dictionarySuggestions) => [
       {
         label: language.NextImage,
-
+        accelerator: 'Left',   
         click: () => {
           console.log("NextImage");
+          
         }
       },
       {
         label: language.PrevImage,
+        accelerator: 'Right',   
         click: () => {
           console.log("PrevImage");
         }
@@ -100,12 +102,20 @@ function CreateContextMenu()
           CopyImageToClipboard();
         }
       },
+      actions.separator(),
+      {
+        label: language.Quit,     
+        accelerator: 'Alt+F4',   
+        click: () => {
+          app.quit();
+        }
+      },
     ],
     showInspectElement: false,
   });
 
   // register short cut
-  globalShortcut.register("CommandOrControl+C", () => { CopyImageToClipboard() });
+  globalShortcut.register("CommandOrControl+C", () => { CopyImageToClipboard() });  
 }
 
 function CopyImageToClipboard()
