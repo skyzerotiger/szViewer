@@ -1,3 +1,5 @@
 {
-    
+    "NextImage" : "Next Image",
+    "PrevImage" : "Prev Image",
+    "CopyClipBoard" : "Copy image to clipboard"
 }

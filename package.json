@@ -32,6 +32,7 @@
     "electron": "^18.2.0"
   },
   "dependencies": {
+    "electron-context-menu": "^3.1.2",
     "electron-is-dev": "^2.0.0",
     "electron-regedit": "^2.0.0",
     "electron-squirrel-startup": "^1.0.0",

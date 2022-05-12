@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron')
 
-language = require("./lang.ko.json")
+var language = require("./lang.ko.json")
 
 ipcRenderer.on("load-image", function (event,store) 
     {
@@ -9,13 +9,23 @@ ipcRenderer.on("load-image", function (event,store)
     }
 );
 
+ipcRenderer.on("copy-image", function (event,store) 
+    {
+        console.log("ipc copy-image " );
+        CopyImage();
+    }
+);
+
 function LoadImage(filename)
 {
     const element = document.getElementById("image-view")
     if (element) 
     {
+        ipcRenderer.send("set-image-filename", filename);
+
         document.title = "szViewer - " + filename.replace(/^.*[\\\/]/, '');
         element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + filename + "'></img>"         
+        element.
         // disable drag
         element.ondragstart = function() { return false; }; 
     }

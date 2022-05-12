@@ -1,23 +1,35 @@
 const isDev = require('electron-is-dev');
 
-if (isDev) {
+if (isDev) 
+{
   console.log('Running in development');
-} else {
+} 
+else 
+{
   console.log('Running in production');
   require('update-electron-app')( { notifyUser :false });
 }
 
 // Modules to control application life and create native browser window
-const {app, BrowserWindow } = require('electron')
+const {app, BrowserWindow, clipboard, nativeImage, ipcMain, globalShortcut  } = require('electron')
+const contextMenu = require('electron-context-menu');
 var fs = require('fs');
+var language = require("./lang.ko.json")
+var currentImageFilename = "";
 
-var handleStartupEvent = function() {
-  if (process.platform !== 'win32') {
+// ------------------------------------------------------------------------------------------------------------------
+// Install, Update
+
+var handleStartupEvent = function() 
+{
+  if (process.platform !== 'win32') 
+  {
     return false;
   }
   
   var squirrelCommand = process.argv[1];
-  switch (squirrelCommand) {
+  switch (squirrelCommand)
+  {
     case '--squirrel-install':    
       RegistrySetup(true);
       //app.quit();
@@ -59,7 +71,53 @@ function RegistrySetup(isInstall)
     Regedit.uninstallAll().then(() => { app.quit(); });
 }
 
-function createWindow () {  
+// ------------------------------------------------------------------------------------------------------------------
+// Context Menu
+
+function CreateContextMenu()
+{
+  contextMenu({
+    menu: (actions, props, browserWindow, dictionarySuggestions) => [
+      {
+        label: language.NextImage,
+
+        click: () => {
+          console.log("NextImage");
+        }
+      },
+      {
+        label: language.PrevImage,
+        click: () => {
+          console.log("PrevImage");
+        }
+      },
+      actions.separator(),
+      {
+        label: language.CopyClipBoard,     
+        accelerator: 'CommandOrControl+C',   
+        click: () => {
+          console.log("CopyClipBoard");
+          CopyImageToClipboard();
+        }
+      },
+    ],
+    showInspectElement: false,
+  });
+
+  // register short cut
+  globalShortcut.register("CommandOrControl+C", () => { CopyImageToClipboard() });
+}
+
+function CopyImageToClipboard()
+{
+  clipboard.writeImage(nativeImage.createFromPath(currentImageFilename)); 
+}
+
+// ------------------------------------------------------------------------------------------------------------------
+// Main Window
+
+function CreateWindow () 
+{  
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -70,13 +128,11 @@ function createWindow () {
     }
   })
 
-  if(!isDev)  
-    mainWindow.setMenu(null)
+  mainWindow.setMenu(null)
 
   mainWindow.once('ready-to-show', () => {
     if(process.argv.length>=2)
-    {    
-      //console.log("load-image main.js" + process.argv.length + ", " + process.argv[0] + ", " +process.argv[1]);
+    { 
       if(fs.existsSync(process.argv[1]))
       {
         // directory check
@@ -99,7 +155,8 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  CreateContextMenu();
+  CreateWindow();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -115,5 +172,7 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// save image filename
+ipcMain.on("set-image-filename", (event, arg) => {
+  currentImageFilename = arg;
+});
