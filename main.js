@@ -201,6 +201,9 @@ ipcMain.on("prev-image", (event, arg) => {
 
 function LoadImage(filename)
 { 
+  currentImageFileIndex = 0;
+  imageFileNameList=[];
+
   // if zip file?
   if(filename.toLowerCase().includes(".zip"))
   { 
@@ -218,44 +221,44 @@ function LoadImage(filename)
     tempPath = tempPath + "/szviewer/zip-temp";
     
     // delete all exist files in tempPath;
-    fs.readdirSync(tempPath).forEach(file => {
-      fs.unlinkSync(path.join(tempPath, file));
-    });
+    fs.rmSync(tempPath, {recursive: true});
 
     // reading archives
     var zip = new AdmZip(filename);
     zip.extractAllTo(tempPath, true);
 
+    zip.getEntries().forEach(function(zipEntry) {
+      imageFileNameList.push(zipEntry.entryName);     
+      console.log(zipEntry.entryName);
+    });
+
     currentZipFileName = filename;
     currentPath = tempPath;
+    currentImageFileIndex = 0;
   }
   else
   {    
     currentZipFileName=undefined;
     currentPath = path.dirname(filename);
-  }
 
-  currentImageFileIndex = 0;
-  imageFileNameList=[];
+    // make image file list from same path
+    fs.readdirSync(currentPath).forEach(element => {    
+      if(supportExtenstion.includes(path.extname(element).toLowerCase().replace(".","")))
+      {
+          imageFileNameList.push(element);        
+      }
+    });
 
-  // make image file list from same path
-  fs.readdirSync(currentPath).forEach(element => {
-    if(supportExtenstion.includes(path.extname(element).toLowerCase().replace(".","")))
+    // find fileIndex
+    for(var i=0; i<imageFileNameList.length; i++)
     {
-        imageFileNameList.push(element);
-    }
-  });
-
-  // find fileIndex
-  for(var i=0; i<imageFileNameList.length; i++)
-  {
-    if(imageFileNameList[i]==path.basename(filename))
-    {
-      currentImageFileIndex = i;
-      break;
+      if(imageFileNameList[i]==path.basename(filename))
+      {
+        currentImageFileIndex = i;
+        break;
+      }
     }
   }
-
 
   ShowImage();  
 }
