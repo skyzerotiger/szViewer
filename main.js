@@ -11,11 +11,20 @@ else
 }
 
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, clipboard, nativeImage, ipcMain, globalShortcut  } = require('electron')
+const {app, BrowserWindow, clipboard, nativeImage, ipcMain  } = require('electron')
 const contextMenu = require('electron-context-menu');
 var fs = require('fs');
-var language = require("./lang.ko.json")
-var currentImageFilename = "";
+var path = require('path');
+var language = require("./lang.ko.json");
+var mainWindow = undefined;
+
+var currentImageFileIndex = 0;
+var imageFileNameList = undefined;
+var currentZipFileName = undefined;
+var currentPath = undefined;
+
+
+var supportExtenstion = ['png','jpg','jpeg', 'jfif', 'pjpeg', 'pjp', 'svg', 'webp','gif', 'apng', 'avif'];
 
 // ------------------------------------------------------------------------------------------------------------------
 // Install, Update
@@ -59,7 +68,7 @@ function RegistrySetup(isInstall)
       description: 'szViewer.ImageFiles',
       
       icon: '',
-      extensions: ['png','jpg','jpeg', 'jfif', 'pjpeg', 'pjp', 'svg', 'webp','gif', 'apng', 'avif'],
+      extensions: supportExtenstion,
       shell: [
           new ShellOption({verb: ShellOption.OPEN}),
       ]
@@ -81,26 +90,24 @@ function CreateContextMenu()
       {
         label: language.NextImage,
         accelerator: 'Left',   
-        click: () => {
-          console.log("NextImage");
-          
-        }
+        click: () => { NextImage(); }
       },
       {
         label: language.PrevImage,
         accelerator: 'Right',   
-        click: () => {
-          console.log("PrevImage");
-        }
+        click: () => { PrevImage(); }
+      },
+      actions.separator(),
+      {
+        label: language.FullScreen,     
+        accelerator: 'Enter',   
+        click: () => { browserWindow.setFullScreen(!browserWindow.isFullScreen()); }
       },
       actions.separator(),
       {
         label: language.CopyClipBoard,     
         accelerator: 'CommandOrControl+C',   
-        click: () => {
-          console.log("CopyClipBoard");
-          CopyImageToClipboard();
-        }
+        click: () => { CopyImageToClipboard();}
       },
       actions.separator(),
       {
@@ -113,14 +120,11 @@ function CreateContextMenu()
     ],
     showInspectElement: false,
   });
-
-  // register short cut
-  globalShortcut.register("CommandOrControl+C", () => { CopyImageToClipboard() });  
 }
 
 function CopyImageToClipboard()
 {
-  clipboard.writeImage(nativeImage.createFromPath(currentImageFilename)); 
+  clipboard.writeImage(nativeImage.createFromPath(imageFileNameList[currentImageFileIndex])); 
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -129,7 +133,7 @@ function CopyImageToClipboard()
 function CreateWindow () 
 {  
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -138,7 +142,7 @@ function CreateWindow ()
     }
   })
 
-  mainWindow.setMenu(null)
+  //mainWindow.setMenu(null)
 
   mainWindow.once('ready-to-show', () => {
     if(process.argv.length>=2)
@@ -148,7 +152,7 @@ function CreateWindow ()
         // directory check
         var stats = fs.lstatSync(process.argv[1]);
         if (!stats.isDirectory()) {
-          mainWindow.webContents.send("load-image", process.argv[1]);
+          LoadImage(process.argv[1]);          
         }        
       }
     }
@@ -182,7 +186,102 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
-// save image filename
-ipcMain.on("set-image-filename", (event, arg) => {
-  currentImageFilename = arg;
+ipcMain.on("load-image", (event, arg) => {
+  console.log("load-image  " + arg);
+  LoadImage(arg);
 });
+
+ipcMain.on("next-image", (event, arg) => {
+  NextImage();
+});
+
+ipcMain.on("prev-image", (event, arg) => {
+  PrevImage();
+});
+
+function LoadImage(filename)
+{ 
+  // if zip file?
+  if(filename.toLowerCase().includes(".zip"))
+  { 
+    var AdmZip = require("adm-zip");
+
+    // extract all files from zip to temp folder
+    let tempPath = app.getPath("temp")
+    console.log(tempPath)
+
+    if(!fs.existsSync(tempPath + "/szviewer"))
+      fs.mkdirSync(tempPath + "/szviewer");
+    if(!fs.existsSync(tempPath + "/szviewer/zip-temp"))
+      fs.mkdirSync(tempPath + "/szviewer/zip-temp");
+
+    tempPath = tempPath + "/szviewer/zip-temp";
+    
+    // delete all exist files in tempPath;
+    fs.readdirSync(tempPath).forEach(file => {
+      fs.unlinkSync(path.join(tempPath, file));
+    });
+
+    // reading archives
+    var zip = new AdmZip(filename);
+    zip.extractAllTo(tempPath, true);
+
+    currentZipFileName = filename;
+    currentPath = tempPath;
+  }
+  else
+  {    
+    currentZipFileName=undefined;
+    currentPath = path.dirname(filename);
+  }
+
+  currentImageFileIndex = 0;
+  imageFileNameList=[];
+
+  // make image file list from same path
+  fs.readdirSync(currentPath).forEach(element => {
+    if(supportExtenstion.includes(path.extname(element).toLowerCase().replace(".","")))
+    {
+        imageFileNameList.push(element);
+    }
+  });
+
+  // find fileIndex
+  for(var i=0; i<imageFileNameList.length; i++)
+  {
+    if(imageFileNameList[i]==path.basename(filename))
+    {
+      currentImageFileIndex = i;
+      break;
+    }
+  }
+
+
+  ShowImage();  
+}
+
+function ShowImage()
+{
+  mainWindow.webContents.send("show-image", { 
+    filename:"[" + (currentImageFileIndex+1) + "/" + imageFileNameList.length + "] " + imageFileNameList[currentImageFileIndex],
+    url:path.join(currentPath, imageFileNameList[currentImageFileIndex])
+  });
+}
+
+function NextImage()
+{
+  currentImageFileIndex++;
+    if(currentImageFileIndex>=imageFileNameList.length)
+      currentImageFileIndex=imageFileNameList.length-1;
+      
+  ShowImage();
+}
+
+function PrevImage()
+{
+  currentImageFileIndex--;
+    if(currentImageFileIndex<0)
+      currentImageFileIndex=0;
+
+  ShowImage();
+}

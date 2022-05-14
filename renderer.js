@@ -2,32 +2,37 @@ const { ipcRenderer } = require('electron')
 
 var language = require("./lang.ko.json")
 
-ipcRenderer.on("load-image", function (event,store) 
+ipcRenderer.on("show-image", function (event,store) 
     {
-        console.log("ipc load-image " + store);
-        LoadImage(store);
+        //console.log("ipc show-image " + store);
+        ShowImage(store);
     }
 );
 
 ipcRenderer.on("copy-image", function (event,store) 
     {
-        console.log("ipc copy-image " );
+        //console.log("ipc copy-image " );
         CopyImage();
     }
 );
 
-function LoadImage(filename)
+function ShowImage(imaegData)
 {
+    //console.log("ShowImage - " + image.dataUrl);
+
     const element = document.getElementById("image-view")
+    
     if (element) 
     {
-        ipcRenderer.send("set-image-filename", filename);
-
-        document.title = "szViewer - " + filename.replace(/^.*[\\\/]/, '');
-        element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + filename + "'></img>"         
-        element.
-        // disable drag
-        element.ondragstart = function() { return false; }; 
+        var img = new Image();
+        img.src = imaegData.url;
+        img.onload = function()
+        {
+            document.title = "szViewer - " + imaegData.filename;        
+            element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + imaegData.url + "'></img>"                 
+        
+            element.ondragstart = function() { return false; };         
+        }
     }
 }
 
@@ -40,7 +45,7 @@ document.addEventListener('drop', (event) => {
         // Using the path attribute to get absolute file path
         console.log('File Path of dragged files: ', f.path)
         
-        LoadImage(f.path);
+        ipcRenderer.send("load-image", f.path);        
         break;
     }
 });
@@ -50,25 +55,6 @@ document.addEventListener('dragover', (e) => {
     e.stopPropagation();
 });
 
-document.onkeydown = function(e)
-{
-    console.log("onkeydown - " + e.key);
-
-    switch(e.key)
-    {
-        case "ArrowRight":
-            break;
-
-        case "ArrowLeft":
-            break;
-
-        case "ArrowUp":
-            break;
-        case "ArrowDown":
-            break;
-    }
-}
-
 // 단축키 설정
 document.onkeyup = function(e) 
 {
@@ -76,6 +62,14 @@ document.onkeyup = function(e)
     
     switch(e.key)
     {
+        case "ArrowRight":
+            ipcRenderer.send("next-image");   
+            break;
+
+        case "ArrowLeft":
+            ipcRenderer.send("prev-image");   
+            break;
+
         case "Enter":
             if(document.fullscreenElement)
                 document.exitFullscreen();

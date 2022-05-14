@@ -2,5 +2,6 @@
     "NextImage" : "Next Image",
     "PrevImage" : "Prev Image",
     "CopyClipBoard" : "Copy image to clipboard",
-    "Quit" : "Quit"
+    "Quit" : "Quit",
+    "FullScreen" : "Full Screen"
 }
