@@ -142,7 +142,7 @@ function CreateWindow ()
     }
   })
 
-  //mainWindow.setMenu(null)
+  mainWindow.setMenu(null)
 
   mainWindow.once('ready-to-show', () => {
     if(process.argv.length>=2)
