@@ -40,6 +40,7 @@ var handleStartupEvent = function()
   switch (squirrelCommand)
   {
     case '--squirrel-install':    
+    case '--squirrel-updated':
       RegistrySetup(true);
       //app.quit();
       return true;
@@ -49,8 +50,7 @@ var handleStartupEvent = function()
       //app.quit();
       return true;
 
-    case '--squirrel-firstrun':
-    case '--squirrel-updated':
+    case '--squirrel-firstrun':    
     case '--squirrel-obsolete':
       app.quit();
       return true;
