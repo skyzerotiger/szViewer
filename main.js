@@ -63,21 +63,32 @@ function RegistrySetup(isInstall)
 {
   const {ProgId, ShellOption, Regedit} = require('electron-regedit')
   
-  new ProgId({
-      appName : "szViewer",
-      description: 'szViewer.ImageFiles',
-      
-      icon: '',
-      extensions: supportExtenstion,
-      shell: [
-          new ShellOption({verb: ShellOption.OPEN}),
-      ]
-  })
-    
+  var progId = new ProgId({
+    appName : "szViewer",
+    description: 'szViewer Image Files',     
+    progExt : 'imagefiles', 
+    icon: '', 
+    extensions: supportExtenstion,
+    shell: [
+        new ShellOption({verb: ShellOption.OPEN}),
+    ]
+  });
+
+  /*new ProgId({
+    appName : "szViewer",
+    description: 'szViewer Zip Files',     
+    progExt : 'zipfiles', 
+    icon: '',
+    extensions: ['zip'],
+    shell: [
+        new ShellOption({verb: 'Open Zip With szViewer' }),
+    ]
+  });*/
+
   if(isInstall)
-    Regedit.installAll().then(() => { app.quit(); });
+    Regedit.installAll().finally(() => { app.quit(); });
   else
-    Regedit.uninstallAll().then(() => { app.quit(); });
+    Regedit.uninstallAll().finally(() => { app.quit(); });
 }
 
 // ------------------------------------------------------------------------------------------------------------------
