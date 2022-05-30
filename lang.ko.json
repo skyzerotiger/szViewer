@@ -3,5 +3,10 @@
     "PrevImage" : "이전 이미지",
     "CopyClipBoard" : "이미지를 클립보드로 복사",
     "Quit" : "종료",
-    "FullScreen" : "전체화면"
+    "FullScreen" : "전체화면",
+
+    "ViewMode" : "보기 모드",
+    "ViewMode_Fit": "꽉차게 보기",
+    "ViewMode_OriginalSize": "원본 크기",
+    "ViewMode_Scale": "확대/축소"
 }

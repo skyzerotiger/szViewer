@@ -15,14 +15,16 @@ const {app, BrowserWindow, clipboard, nativeImage, ipcMain  } = require('electro
 const contextMenu = require('electron-context-menu');
 var fs = require('fs');
 var path = require('path');
-var language = require("./lang.ko.json");
+const { config } = require('process');
+const storage = require('electron-json-storage');
+let CONFIG = {};
+let language = {};
 var mainWindow = undefined;
 
 var currentImageFileIndex = 0;
 var imageFileNameList = undefined;
 var currentZipFileName = undefined;
 var currentPath = undefined;
-
 
 var supportExtenstion = ['png','jpg','jpeg', 'jfif', 'pjpeg', 'pjp', 'svg', 'webp','gif', 'apng', 'avif'];
 
@@ -109,6 +111,29 @@ function CreateContextMenu()
         click: () => { PrevImage(); }
       },
       actions.separator(),
+
+      {
+        label: language.ViewMode,
+        submenu: [
+          {
+            label: language.ViewMode_Fit,
+            accelerator: '1',   
+            click: () => {  }
+          },
+          {
+            label: language.ViewMode_OriginalSize,
+            accelerator: '2',   
+            click: () => {  }
+          },
+          {
+            label: language.ViewMode_Scale,
+            accelerator: '3',   
+            click: () => { }
+          },
+        ]
+      },
+
+      actions.separator(),
       {
         label: language.FullScreen,     
         accelerator: 'Enter',   
@@ -124,9 +149,7 @@ function CreateContextMenu()
       {
         label: language.Quit,     
         accelerator: 'Alt+F4',   
-        click: () => {
-          app.quit();
-        }
+        click: () => { app.quit(); }
       },
     ],
     showInspectElement: false,
@@ -135,7 +158,7 @@ function CreateContextMenu()
 
 function CopyImageToClipboard()
 {
-  clipboard.writeImage(nativeImage.createFromPath(imageFileNameList[currentImageFileIndex])); 
+  clipboard.writeImage(nativeImage.createFromPath(path.join(currentPath, imageFileNameList[currentImageFileIndex]))); 
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -158,6 +181,10 @@ function CreateWindow ()
   mainWindow.once('ready-to-show', () => {
     if(process.argv.length>=2)
     { 
+      // 콘피그 값을 전달한다.
+      mainWindow.webContents.send('config', CONFIG);
+
+      // 인자로 전달되는 파일들.
       if(fs.existsSync(process.argv[1]))
       {
         // directory check
@@ -166,6 +193,7 @@ function CreateWindow ()
           LoadImage(process.argv[1]);          
         }        
       }
+
     }
   })
 
@@ -176,10 +204,51 @@ function CreateWindow ()
   // mainWindow.webContents.openDevTools()
 }
 
+function LoadConfig()
+{
+    // 콘피그 값 얻어오기  
+  CONFIG = storage.getSync("config");
+  console.log("CONFIG: " + JSON.stringify(CONFIG));
+
+  // 디폴트값 지정
+  if(CONFIG.viewMode == undefined)
+    CONFIG.scaleMode = 0; // 0: 화면에 맞추기, 1: 원본보기, 2: 스케일 모드
+
+  if(CONFIG.scaleValue == undefined)
+    CONFIG.scaleValue = 1.0; // 스케일 모드에서의 스케일 값. 다음 이미지로 넘어가도 유지된다.
+
+  if(CONFIG.language== undefined)
+  {
+    //console.log("app.local  = " + app.getLocale());
+    switch(app.getLocale())
+    {
+      case 'ko': language = CONFIG.language=1; break;
+      default: language = CONFIG.language=2; break;
+    }
+  }
+
+  switch(CONFIG.language)
+  {
+    case 1: language = require('./lang.ko.json'); break;
+    default: language = require('./lang.en.json'); break;
+  }
+
+  console.log("CONFIG: " + JSON.stringify(CONFIG));  
+
+  SaveConfig();
+}
+
+function SaveConfig()
+{
+  // 저장
+  storage.set("config", CONFIG, function(error) {});
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(() => {  
+  LoadConfig();
   CreateContextMenu();
   CreateWindow();
 
@@ -208,6 +277,10 @@ ipcMain.on("next-image", (event, arg) => {
 
 ipcMain.on("prev-image", (event, arg) => {
   PrevImage();
+});
+
+ipcMain.on('log', (event, arg) => {
+  console.log("renderer - " + arg);
 });
 
 function LoadImage(filename)
@@ -299,3 +372,6 @@ function PrevImage()
 
   ShowImage();
 }
+
+
+

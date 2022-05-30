@@ -3,5 +3,10 @@
     "PrevImage" : "Prev Image",
     "CopyClipBoard" : "Copy image to clipboard",
     "Quit" : "Quit",
-    "FullScreen" : "Full Screen"
+    "FullScreen" : "Full Screen",
+
+    "ViewMode" : "View Mode",
+    "ViewMode_Fit": "Full View",
+    "ViewMode_OriginalSize": "Original Size",
+    "ViewMode_Scale": "Scale View"
 }

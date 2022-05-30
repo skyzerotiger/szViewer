@@ -1,6 +1,7 @@
 const { ipcRenderer } = require('electron')
 
-var language = require("./lang.ko.json")
+let language = require("./lang.ko.json")
+let CONFIG = {};
 
 ipcRenderer.on("show-image", function (event,store) 
     {
@@ -13,6 +14,13 @@ ipcRenderer.on("copy-image", function (event,store)
     {
         //console.log("ipc copy-image " );
         CopyImage();
+    }
+);
+
+ipcRenderer.on("config", function (event,store) 
+    {        
+        CONFIG = store;      
+        ipcRenderer.send("log", "config - " + JSON.stringify(CONFIG));   
     }
 );
 
@@ -56,9 +64,9 @@ document.addEventListener('dragover', (e) => {
 });
 
 // 단축키 설정
-document.onkeyup = function(e) 
+document.onkeydown = function(e) 
 {
-    console.log("onkeyup - " + e.key);
+    console.log("onkeydown - " + e.key);
     
     switch(e.key)
     {
@@ -78,7 +86,7 @@ document.onkeyup = function(e)
             break;
 
         case " ":
-            
+            ipcRenderer.send("next-image");  
             break;
     }
 }
