@@ -219,17 +219,12 @@ function LoadConfig()
 
   if(CONFIG.language== undefined)
   {
-    //console.log("app.local  = " + app.getLocale());
-    switch(app.getLocale())
-    {
-      case 'ko': language = CONFIG.language=1; break;
-      default: language = CONFIG.language=2; break;
-    }
+    CONFIG.language = app.getLocale();
   }
 
   switch(CONFIG.language)
   {
-    case 1: language = require('./lang.ko.json'); break;
+    case "ko": language = require('./lang.ko.json'); break;
     default: language = require('./lang.en.json'); break;
   }
 
