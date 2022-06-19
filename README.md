@@ -14,4 +14,4 @@ NO popup, NO ads, NO background works.
 Contributions are always welcome! 
 
 # support me
-- [buy me a coffee](https://www.buymeacoffee.com/skyzero)
+[buy me a coffee](https://www.buymeacoffee.com/skyzero)
