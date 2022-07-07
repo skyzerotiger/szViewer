@@ -62,35 +62,3 @@ document.addEventListener('dragover', (e) => {
     e.preventDefault();
     e.stopPropagation();
 });
-
-// 단축키 설정
-document.onkeydown = function(e) 
-{
-    console.log("onkeydown - " + e.key);
-    
-    switch(e.key)
-    {
-        case "PageDown":
-        case "ArrowDown":
-        case "ArrowRight":
-            ipcRenderer.send("next-image");   
-            break;
-
-        case "PageUp":
-        case "ArrowUp":
-        case "ArrowLeft":
-            ipcRenderer.send("prev-image");   
-            break;
-
-        case "Enter":
-            if(document.fullscreenElement)
-                document.exitFullscreen();
-            else
-                document.body.requestFullscreen();        
-            break;
-
-        case " ":
-            ipcRenderer.send("next-image");  
-            break;
-    }
-}

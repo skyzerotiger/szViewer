@@ -2,6 +2,8 @@
     "NextImage" : "다음 이미지",
     "PrevImage" : "이전 이미지",
     "CopyClipBoard" : "이미지를 클립보드로 복사",
+    "ImageInfoShow" : "이미지 정보 보기",
+    "ImageInfoHide" : "이미지 정보 닫기",
     "Quit" : "종료",
     "FullScreen" : "전체화면",
 

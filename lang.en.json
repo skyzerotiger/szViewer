@@ -2,6 +2,8 @@
     "NextImage" : "Next Image",
     "PrevImage" : "Prev Image",
     "CopyClipBoard" : "Copy image to clipboard",
+    "ImageInfoShow" : "Show image info",
+    "ImageInfoHide" : "Hide image info",
     "Quit" : "Quit",
     "FullScreen" : "Full Screen",
 

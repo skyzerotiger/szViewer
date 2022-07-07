@@ -13,6 +13,7 @@ else
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, clipboard, nativeImage, ipcMain  } = require('electron')
 const contextMenu = require('electron-context-menu');
+const localShortcut = require('electron-localshortcut');
 var fs = require('fs');
 var path = require('path');
 const { config } = require('process');
@@ -102,12 +103,12 @@ function CreateContextMenu()
     menu: (actions, props, browserWindow, dictionarySuggestions) => [
       {
         label: language.NextImage,
-        accelerator: 'Left',   
+        accelerator: 'Right',   
         click: () => { NextImage(); }
       },
       {
         label: language.PrevImage,
-        accelerator: 'Right',   
+        accelerator: 'Left',   
         click: () => { PrevImage(); }
       },
       actions.separator(),
@@ -143,8 +144,14 @@ function CreateContextMenu()
       {
         label: language.CopyClipBoard,     
         accelerator: 'CommandOrControl+C',   
-        click: () => { CopyImageToClipboard();}
+        click: () => { CopyImageToClipboard(); }
       },
+      {
+        label: CONFIG.showImageInfo ? language.ImageInfoHide : language.ImageInfoShow, 
+        accelerator: 'CommandOrControl+I',   
+        click: () =>  { ToggleImageInfo(); }
+      },
+
       actions.separator(),
       {
         label: language.Quit,     
@@ -154,6 +161,19 @@ function CreateContextMenu()
     ],
     showInspectElement: false,
   });
+
+  localShortcut.register(mainWindow, ["Left", "Up", "PageUp",], () => { PrevImage(); });
+  localShortcut.register(mainWindow, ["Right", "Down","PageDown", "Space"] , () => { NextImage(); });
+  localShortcut.register(mainWindow, "Enter" , () => { mainWindow.setFullScreen(!mainWindow.isFullScreen()); });
+  localShortcut.register(mainWindow, "CommandOrControl+C" , () => { CopyImageToClipboard(); });
+  localShortcut.register(mainWindow, "CommandOrControl+I" , () => { ToggleImageInfo(); });
+}
+
+function ToggleImageInfo()
+{
+  CONFIG.showImageInfo = !CONFIG.showImageInfo;
+  // 콘피그 값을 전달한다.
+  browserWindow.webContents.send('config', CONFIG);
 }
 
 function CopyImageToClipboard()
@@ -217,6 +237,9 @@ function LoadConfig()
   if(CONFIG.scaleValue == undefined)
     CONFIG.scaleValue = 1.0; // 스케일 모드에서의 스케일 값. 다음 이미지로 넘어가도 유지된다.
 
+  if(CONFIG.showImageInfo == undefined)
+    CONFIG.showImageInfo = false; // 이미지 정보 보기
+
   if(CONFIG.language== undefined)
   {
     CONFIG.language = app.getLocale();
@@ -244,8 +267,8 @@ function SaveConfig()
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {  
   LoadConfig();
-  CreateContextMenu();
   CreateWindow();
+  CreateContextMenu();  
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
