@@ -70,10 +70,14 @@ document.onkeydown = function(e)
     
     switch(e.key)
     {
+        case "PageDown":
+        case "ArrowDown":
         case "ArrowRight":
             ipcRenderer.send("next-image");   
             break;
 
+        case "PageUp":
+        case "ArrowUp":
         case "ArrowLeft":
             ipcRenderer.send("prev-image");   
             break;
