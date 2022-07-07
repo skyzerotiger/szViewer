@@ -42,12 +42,7 @@ function ShowImage(imageData)
             element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + imageData.url + "'></img>";
             if(CONFIG.showImageInfo)
             {
-                element.innerHTML += "<div class='info'>";
-
-                //element.innerHTML += imageData.width + " x " + imageData.height + "<br>";
-                //element.innerHTML += imageData.width + " x " + imageData.height + "<br>";
-
-                element.innerHTML += "</div>";
+                element.innerHTML += "<div class='info'>Image Size : " + this.width + " x " + this.height + "<br>" + "</div>";
             }
         
             element.ondragstart = function() { return false; };         

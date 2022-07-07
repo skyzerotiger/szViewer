@@ -222,7 +222,7 @@ function CreateWindow ()
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-   //mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 }
 
 function LoadConfig()
@@ -368,9 +368,10 @@ function LoadImage(filename)
 
 function ShowImage()
 {
+  let url = path.join(currentPath, imageFileNameList[currentImageFileIndex]);
   mainWindow.webContents.send("show-image", { 
     filename:"[" + (currentImageFileIndex+1) + "/" + imageFileNameList.length + "] " + imageFileNameList[currentImageFileIndex],
-    url:path.join(currentPath, imageFileNameList[currentImageFileIndex])
+    url:url
   });
 }
 
