@@ -173,7 +173,8 @@ function ToggleImageInfo()
 {
   CONFIG.showImageInfo = !CONFIG.showImageInfo;
   // 콘피그 값을 전달한다.
-  browserWindow.webContents.send('config', CONFIG);
+  mainWindow.webContents.send('config', CONFIG);  
+  ShowImage();
 }
 
 function CopyImageToClipboard()
@@ -221,7 +222,7 @@ function CreateWindow ()
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+   //mainWindow.webContents.openDevTools()
 }
 
 function LoadConfig()

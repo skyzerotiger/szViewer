@@ -21,10 +21,12 @@ ipcRenderer.on("config", function (event,store)
     {        
         CONFIG = store;      
         ipcRenderer.send("log", "config - " + JSON.stringify(CONFIG));   
+
+
     }
 );
 
-function ShowImage(imaegData)
+function ShowImage(imageData)
 {
     //console.log("ShowImage - " + image.dataUrl);
 
@@ -33,11 +35,20 @@ function ShowImage(imaegData)
     if (element) 
     {
         var img = new Image();
-        img.src = imaegData.url;
+        img.src = imageData.url;
         img.onload = function()
         {
-            document.title = "szViewer - " + imaegData.filename;        
-            element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + imaegData.url + "'></img>"                 
+            document.title = "szViewer - " + imageData.filename;        
+            element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + imageData.url + "'></img>";
+            if(CONFIG.showImageInfo)
+            {
+                element.innerHTML += "<div class='info'>";
+
+                //element.innerHTML += imageData.width + " x " + imageData.height + "<br>";
+                //element.innerHTML += imageData.width + " x " + imageData.height + "<br>";
+
+                element.innerHTML += "</div>";
+            }
         
             element.ondragstart = function() { return false; };         
         }
