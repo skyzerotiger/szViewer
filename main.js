@@ -175,6 +175,7 @@ function ToggleImageInfo()
   // 콘피그 값을 전달한다.
   mainWindow.webContents.send('config', CONFIG);  
   ShowImage();
+  SaveConfig();
 }
 
 function CopyImageToClipboard()
@@ -222,7 +223,7 @@ function CreateWindow ()
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 }
 
 function LoadConfig()
