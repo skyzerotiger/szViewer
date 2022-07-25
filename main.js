@@ -119,18 +119,18 @@ function CreateContextMenu()
           {
             label: language.ViewMode_Fit,
             accelerator: '1',   
-            click: () => {  }
+            click: () => {  SetViewMode(0);  }
           },
           {
             label: language.ViewMode_OriginalSize,
             accelerator: '2',   
-            click: () => {  }
+            click: () => { SetViewMode(1); }
           },
-          {
+          /*{
             label: language.ViewMode_Scale,
             accelerator: '3',   
-            click: () => { }
-          },
+            click: () => { SetViewMode(2);}
+          },*/
         ]
       },
 
@@ -167,6 +167,9 @@ function CreateContextMenu()
   localShortcut.register(mainWindow, "Enter" , () => { mainWindow.setFullScreen(!mainWindow.isFullScreen()); });
   localShortcut.register(mainWindow, "CommandOrControl+C" , () => { CopyImageToClipboard(); });
   localShortcut.register(mainWindow, "CommandOrControl+I" , () => { ToggleImageInfo(); });
+  localShortcut.register(mainWindow, "1" , () => { SetViewMode(0); });
+  localShortcut.register(mainWindow, "2" , () => { SetViewMode(1); });
+  //localShortcut.register(mainWindow, "3" , () => { SetViewMode(2); });
 }
 
 function ToggleImageInfo()
@@ -181,6 +184,14 @@ function ToggleImageInfo()
 function CopyImageToClipboard()
 {
   clipboard.writeImage(nativeImage.createFromPath(path.join(currentPath, imageFileNameList[currentImageFileIndex]))); 
+}
+
+function SetViewMode(viewMode)
+{  
+  CONFIG.viewMode = viewMode;
+  mainWindow.webContents.send('config', CONFIG);  
+  ShowImage();  
+  SaveConfig();
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -234,7 +245,7 @@ function LoadConfig()
 
   // 디폴트값 지정
   if(CONFIG.viewMode == undefined)
-    CONFIG.scaleMode = 0; // 0: 화면에 맞추기, 1: 원본보기, 2: 스케일 모드
+    CONFIG.viewMode = 0; // 0: 화면에 맞추기, 1: 원본보기, 2: 스케일 모드
 
   if(CONFIG.scaleValue == undefined)
     CONFIG.scaleValue = 1.0; // 스케일 모드에서의 스케일 값. 다음 이미지로 넘어가도 유지된다.
@@ -369,8 +380,12 @@ function LoadImage(filename)
 
 function ShowImage()
 {
+  if(imageFileNameList.length==0)
+    return;
+
   let url = path.join(currentPath, imageFileNameList[currentImageFileIndex]);
-  mainWindow.webContents.send("show-image", { 
+  mainWindow.webContents.send("show-image", 
+  { 
     filename:"[" + (currentImageFileIndex+1) + "/" + imageFileNameList.length + "] " + imageFileNameList[currentImageFileIndex],
     url:url
   });
@@ -379,8 +394,8 @@ function ShowImage()
 function NextImage()
 {
   currentImageFileIndex++;
-    if(currentImageFileIndex>=imageFileNameList.length)
-      currentImageFileIndex=imageFileNameList.length-1;
+  if(currentImageFileIndex>=imageFileNameList.length)
+    currentImageFileIndex=imageFileNameList.length-1;
       
   ShowImage();
 }
@@ -388,8 +403,8 @@ function NextImage()
 function PrevImage()
 {
   currentImageFileIndex--;
-    if(currentImageFileIndex<0)
-      currentImageFileIndex=0;
+  if(currentImageFileIndex<0)
+    currentImageFileIndex=0;
 
   ShowImage();
 }

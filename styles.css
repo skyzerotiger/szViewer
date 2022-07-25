@@ -8,6 +8,9 @@ body {
     margin: 0;
     padding: 0;
     background-color: #000;        
+	-webkit-app-region: drag;
+    width:100%;
+    height:100%;
 }     
 
 .info
@@ -19,4 +22,18 @@ body {
     padding: 10px;
     color: #fff;
     background-color: rgba( 0, 0, 0, 0.5 );
+}
+
+#image-view 
+{
+    width: 100%;
+    height: 100%;
+    transform-origin: 0px 0px;
+    transform: scale(1) translate(0px, 0px);    
+}
+
+div#image-view > img 
+{
+    width: 100%;
+    height: auto;
 }

@@ -20,15 +20,14 @@ ipcRenderer.on("copy-image", function (event,store)
 ipcRenderer.on("config", function (event,store) 
     {        
         CONFIG = store;      
-        ipcRenderer.send("log", "config - " + JSON.stringify(CONFIG));   
-
-
+        //ipcRenderer.send("log", "config - " + JSON.stringify(CONFIG));   
+        console.log("config - " + JSON.stringify(CONFIG));
     }
 );
 
 function ShowImage(imageData)
 {
-    //console.log("ShowImage - " + image.dataUrl);
+    //console.log("ShowImage - " + image.dataUrl + ", " + CONFIG.viewMode);
 
     const element = document.getElementById("image-view")
     
@@ -38,14 +37,34 @@ function ShowImage(imageData)
         img.src = imageData.url;
         img.onload = function()
         {
+            switch(CONFIG.viewMode)
+            {
+                case 0:// 스케일 유지가 아니면 값을 초기화 한다
+                    pointX = pointY = 0;
+                    scale = 1.0;
+                    setTransform();
+                    break;
+
+                case 1: // 원본 사이즈면 화면 중앙으로 이미지 이동
+                    pointX = (window.innerWidth-this.width) / 2; 
+                    pointY = (window.innerHeight-this.height) / 2;
+
+                    scale = 1;
+                    setTransform();
+                    break;
+            }
+            
             document.title = "szViewer - " + imageData.filename;        
-            element.innerHTML = "<img id='image' style='height:100vh; width:100vw; object-fit:contain' src='" + imageData.url + "'></img>";
+
+            let style = "height:100vh; width:100vw;";
+            if(CONFIG.viewMode == 1)
+                style = "height:"+this.height+"px; width:"+this.width+"px;";
+
+            element.innerHTML = "<img id='image' style='" + style + " object-fit:contain;' src='" + imageData.url + "'></img>";
             if(CONFIG.showImageInfo)
             {
                 element.innerHTML += "<div class='info'>Image Size : " + this.width + " x " + this.height + "<br>" + "</div>";
             }
-        
-            element.ondragstart = function() { return false; };         
         }
     }
 }
@@ -68,3 +87,61 @@ document.addEventListener('dragover', (e) => {
     e.preventDefault();
     e.stopPropagation();
 });
+
+let scale = 1,
+    panning = false,
+    pointX = 0,
+    pointY = 0,
+    start = { x: 0, y: 0 },
+    zoom = document.getElementById("image-view");
+
+    
+function setTransform() 
+{    
+    zoom.style.transform = "translate(" + pointX + "px, " + pointY + "px) scale(" + scale + ")";
+}
+
+document.onmousedown = function (e) 
+{
+    if(e.buttons == 2)
+        return;
+
+    e.preventDefault();
+    start = { x: e.clientX - pointX, y: e.clientY - pointY };
+    panning = true;
+}
+
+document.onmouseup = function (e) 
+{
+    if(e.buttons == 2)
+        return;
+
+    panning = false;
+}
+
+document.onmousemove = function (e) 
+{
+    e.preventDefault();
+    if (!panning) 
+    {
+        return;
+    }
+
+    pointX = (e.clientX - start.x);
+    pointY = (e.clientY - start.y);
+    setTransform();
+}
+
+document.onwheel = function (e) 
+{
+    e.preventDefault();
+    var xs = (e.clientX - pointX) / scale,
+        ys = (e.clientY - pointY) / scale,
+        delta = (e.wheelDelta ? e.wheelDelta : -e.deltaY);
+
+    (delta > 0) ? (scale *= 1.2) : (scale /= 1.2);
+    pointX = e.clientX - xs * scale;
+    pointY = e.clientY - ys * scale;
+
+    setTransform();
+}
