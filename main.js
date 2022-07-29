@@ -118,12 +118,14 @@ function CreateContextMenu()
         submenu: [
           {
             label: language.ViewMode_Fit,
+            checked : CONFIG.viewMode == 0 ? true : false,
             accelerator: '1',   
             click: () => {  SetViewMode(0);  }
           },
           {
             label: language.ViewMode_OriginalSize,
             accelerator: '2',   
+            checked : CONFIG.viewMode == 1 ? true : false,
             click: () => { SetViewMode(1); }
           },
           /*{
@@ -131,6 +133,20 @@ function CreateContextMenu()
             accelerator: '3',   
             click: () => { SetViewMode(2);}
           },*/
+        ]
+      },
+
+      {
+        label: language.ImageFilter,
+        submenu: [
+          {
+            label: language.ImageFilter_None,
+            click: () => {  SetFilterMode(0);  }
+          },
+          {
+            label: language.ImageFilter_Smoothness,
+            click: () => { SetFilterMode(1); }
+          },
         ]
       },
 
@@ -177,7 +193,7 @@ function ToggleImageInfo()
   CONFIG.showImageInfo = !CONFIG.showImageInfo;
   // 콘피그 값을 전달한다.
   mainWindow.webContents.send('config', CONFIG);  
-  ShowImage();
+  ShowImage(false);
   SaveConfig();
 }
 
@@ -190,7 +206,15 @@ function SetViewMode(viewMode)
 {  
   CONFIG.viewMode = viewMode;
   mainWindow.webContents.send('config', CONFIG);  
-  ShowImage();  
+  ShowImage(true);  
+  SaveConfig();
+}
+
+function SetFilterMode(filterMode)
+{  
+  CONFIG.filterMode = filterMode;
+  mainWindow.webContents.send('config', CONFIG);  
+  ShowImage(false);  
   SaveConfig();
 }
 
@@ -252,6 +276,9 @@ function LoadConfig()
 
   if(CONFIG.showImageInfo == undefined)
     CONFIG.showImageInfo = false; // 이미지 정보 보기
+
+  if(CONFIG.filterMode == undefined)
+    CONFIG.filterMode = 0;  // 0: 부드럽게, 1: 픽셀
 
   if(CONFIG.language== undefined)
   {
@@ -375,10 +402,10 @@ function LoadImage(filename)
     }
   }
 
-  ShowImage();  
+  ShowImage(true);  
 }
 
-function ShowImage()
+function ShowImage(transfromReset)
 {
   if(imageFileNameList.length==0)
     return;
@@ -387,7 +414,8 @@ function ShowImage()
   mainWindow.webContents.send("show-image", 
   { 
     filename:"[" + (currentImageFileIndex+1) + "/" + imageFileNameList.length + "] " + imageFileNameList[currentImageFileIndex],
-    url:url
+    url:url,
+    transfromReset:transfromReset
   });
 }
 
@@ -397,7 +425,7 @@ function NextImage()
   if(currentImageFileIndex>=imageFileNameList.length)
     currentImageFileIndex=imageFileNameList.length-1;
       
-  ShowImage();
+  ShowImage(true);
 }
 
 function PrevImage()
@@ -406,7 +434,7 @@ function PrevImage()
   if(currentImageFileIndex<0)
     currentImageFileIndex=0;
 
-  ShowImage();
+  ShowImage(true);
 }
 
 

@@ -1,14 +1,21 @@
 {
     "NextImage" : "Next Image",
     "PrevImage" : "Prev Image",
+    
     "CopyClipBoard" : "Copy image to clipboard",
+    
     "ImageInfoShow" : "Show image info",
     "ImageInfoHide" : "Hide image info",
+    
     "Quit" : "Quit",
     "FullScreen" : "Full Screen",
-
+    
     "ViewMode" : "View Mode",
     "ViewMode_Fit": "Full View",
     "ViewMode_OriginalSize": "Original Size",
-    "ViewMode_Scale": "Keep Scale"
+    "ViewMode_Scale": "Keep Scale",
+
+    "ImageFilter" : "Image Filter",
+    "ImageFilter_None": "None",
+    "ImageFilter_Smoothness": "Smoothness"
 }

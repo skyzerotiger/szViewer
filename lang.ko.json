@@ -10,5 +10,9 @@
     "ViewMode" : "보기 모드",
     "ViewMode_Fit": "꽉차게 보기",
     "ViewMode_OriginalSize": "원본 크기",
-    "ViewMode_Scale": "확대/축소 유지"
+    "ViewMode_Scale": "확대/축소 유지",
+
+    "ImageFilter" : "이미지 필터",
+    "ImageFilter_None": "아무것도 안함",
+    "ImageFilter_Smoothness": "부드럽게"
 }

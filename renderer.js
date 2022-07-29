@@ -40,17 +40,25 @@ function ShowImage(imageData)
             switch(CONFIG.viewMode)
             {
                 case 0:// 스케일 유지가 아니면 값을 초기화 한다
-                    pointX = pointY = 0;
-                    scale = 1.0;
-                    setTransform();
+                    if(imageData.transfromReset)
+                    {
+                        pointX = pointY = 0;
+                        scale = 1.0;
+                        setTransform();
+                    }
+                    
                     break;
 
                 case 1: // 원본 사이즈면 화면 중앙으로 이미지 이동
-                    pointX = (window.innerWidth-this.width) / 2; 
-                    pointY = (window.innerHeight-this.height) / 2;
+                    if(imageData.transfromReset)
+                    {   
+                        pointX = (window.innerWidth-this.width) / 2; 
+                        pointY = (window.innerHeight-this.height) / 2;
 
-                    scale = 1;
-                    setTransform();
+                        scale = 1;
+                        setTransform();
+                    }
+                    
                     break;
             }
             
@@ -60,10 +68,14 @@ function ShowImage(imageData)
             if(CONFIG.viewMode == 1)
                 style = "height:"+this.height+"px; width:"+this.width+"px;";
 
-            element.innerHTML = "<img id='image' style='" + style + " object-fit:contain;' src='" + imageData.url + "'></img>";
+            if(CONFIG.filterMode == 0)
+                style += "image-rendering: pixelated;";
+
+            element.innerHTML = "<img id='image' style='" + style + " object-fit:contain; ' src='" + imageData.url + "'></img>";
             if(CONFIG.showImageInfo)
             {
-                element.innerHTML += "<div class='info'>Image Size : " + this.width + " x " + this.height + "<br>" + "</div>";
+                let infoElement = document.getElementById("image-info")
+                infoElement.innerHTML = "<div class='info'>Image Size : " + this.width + " x " + this.height + "<br>" + "</div>";
             }
         }
     }
