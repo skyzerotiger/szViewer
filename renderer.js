@@ -68,7 +68,7 @@ function ShowImage(imageData)
             if(CONFIG.viewMode == 1)
                 style = "height:"+this.height+"px; width:"+this.width+"px;";
 
-            if(CONFIG.filterMode == 0)
+            if(CONFIG.filterMode == 1)
                 style += "image-rendering: pixelated;";
 
             element.innerHTML = "<img id='image' style='" + style + " object-fit:contain; ' src='" + imageData.url + "'></img>";

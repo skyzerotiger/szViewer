@@ -119,6 +119,7 @@ function CreateContextMenu()
           {
             label: language.ViewMode_Fit,
             checked : CONFIG.viewMode == 0 ? true : false,
+            type : "checkbox",
             accelerator: '1',   
             click: () => {  SetViewMode(0);  }
           },
@@ -126,6 +127,7 @@ function CreateContextMenu()
             label: language.ViewMode_OriginalSize,
             accelerator: '2',   
             checked : CONFIG.viewMode == 1 ? true : false,
+            type : "checkbox",
             click: () => { SetViewMode(1); }
           },
           /*{
@@ -140,13 +142,17 @@ function CreateContextMenu()
         label: language.ImageFilter,
         submenu: [
           {
-            label: language.ImageFilter_None,
-            click: () => {  SetFilterMode(0);  }
+            label: language.ImageFilter_Smoothness,
+            checked : CONFIG.filterMode == 0 ? true : false,
+            type : "checkbox",
+            click: () => { SetFilterMode(0); }
           },
           {
-            label: language.ImageFilter_Smoothness,
-            click: () => { SetFilterMode(1); }
-          },
+            label: language.ImageFilter_None,
+            checked : CONFIG.filterMode == 1 ? true : false,
+            type : "checkbox",
+            click: () => {  SetFilterMode(1);  }
+          },          
         ]
       },
 
