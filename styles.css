@@ -24,6 +24,16 @@ body {
     background-color: rgba( 0, 0, 0, 0.5 );
 }
 
+#ControlPanel
+{
+    position: absolute;
+    width: 100%;
+    height: 30%;
+    bottom: 0;
+    visibility: visible;
+    transform:translateY(30%);
+}
+
 #image-view 
 {
     width: 100%;
